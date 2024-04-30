@@ -1,0 +1,44 @@
+- name: Make sure git is installed
+  remote_user: root
+  ansible.builtin.dnf:
+    name: git
+    state: latest
+    allowerasing: true
+
+- name: Make sure the HEAD of the default branch is fetched
+  remote_user: "{{ pi_hole_username }}"
+  ansible.builtin.git:
+    repo: https://github.com/remolueoend/openvpn-pihole.git
+    dest: "/home/{{ pi_hole_username }}/openvpn-pihole"
+    force: true
+
+- name: Make sure that environment variables for docker-compose are up to date
+  remote_user: "{{ pi_hole_username }}"
+  ansible.builtin.copy:
+    src: ".env.vault"
+    dest: "/home/{{ pi_hole_username }}/openvpn-pihole/.env"
+
+- name: Make sure the OpenVPN client config is up to date
+  remote_user: "{{ pi_hole_username }}"
+  ansible.builtin.template:
+    src: "openvpn_client.conf.j2"
+    dest: "/home/{{ pi_hole_username }}/openvpn-pihole/openvpn/config/client.conf"
+  vars:
+    hostname: "{{ inventory_hostname }}"
+
+- name: Make sure the OpenVPN server config is up to date
+  remote_user: "{{ pi_hole_username }}"
+  ansible.builtin.template:
+    src: "openvpn_server.conf.j2"
+    dest: "/home/{{ pi_hole_username }}/openvpn-pihole/openvpn/config/server.conf"
+
+- name: "Make sure pihole services are up and running"
+  remote_user: "{{ pi_hole_username }}"
+  community.docker.docker_compose_v2:
+    project_src: "/home/{{ pi_hole_username }}/openvpn-pihole"
+    build: always
+  register: output
+
+- name: Show results
+  ansible.builtin.debug:
+    var: output

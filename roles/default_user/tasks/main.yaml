@@ -1,0 +1,15 @@
+- name: Create the default user if it does not exist
+  remote_user: root
+  ansible.builtin.user:
+    name: "{{ default_user_username }}"
+    password: "{{ default_user_password | password_hash('sha256') }}"
+    groups:
+      - wheel
+      - docker
+
+- name: Add the provided public key to authorized_keys
+  remote_user: root
+  ansible.posix.authorized_key:
+    user: "{{ default_user_username }}"
+    state: present
+    key: "{{ default_user_pub_key }}"

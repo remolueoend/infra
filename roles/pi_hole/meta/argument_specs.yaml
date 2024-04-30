@@ -1,0 +1,7 @@
+argument_specs:
+  main:
+    options:
+      pi_hole_username:
+        type: str
+        required: true
+        description: The username under which pihole will be set up.

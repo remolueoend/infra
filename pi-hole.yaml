@@ -1,0 +1,10 @@
+- name: Setup the pi-hole server behind an OpenVPN server
+  hosts: all
+  roles:
+    - docker
+    - role: default_user
+      default_user_username: "{{ global_default_user_name }}"
+      default_user_password: "{{ global_default_user_password | string }}"
+      default_user_pub_key: "{{ global_default_user_pub_key }}"
+    - role: pi_hole
+      pi_hole_username: "{{ global_default_user_name }}"

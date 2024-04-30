@@ -1,0 +1,15 @@
+argument_specs:
+  main:
+    options:
+      default_user_username:
+        type: str
+        required: true
+        description: The username of the user that will be created
+      default_user_password:
+        type: str
+        required: true
+        description: The password of the user that will be created
+      default_user_pub_key:
+        type: str
+        required: true
+        description: The SSH public key of the user that will be created
