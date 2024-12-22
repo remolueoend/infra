@@ -1,0 +1,11 @@
+argument_specs:
+  main:
+    options:
+      factorio_username:
+        type: str
+        required: true
+        description: The username under which the factorio server will be set up.
+      factorio_container_user:
+        type: str
+        required: true
+        description: The user ID under which the server runs in the container.

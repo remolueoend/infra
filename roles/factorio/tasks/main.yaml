@@ -1,0 +1,48 @@
+- name: Make sure the project directory exists
+  remote_user: root
+  ansible.builtin.file:
+    path: "/home/{{ factorio_username }}/factorio-server"
+    state: directory
+    owner: "{{ factorio_username }}"
+    group: "{{ factorio_username }}"
+
+- name: Make sure the docker-compose config is up to date
+  remote_user: root
+  ansible.builtin.template:
+    src: "docker-compose.yaml.j2"
+    dest: "/home/{{ factorio_username }}/factorio-server/docker-compose.yaml"
+
+- name: Make sure the data directory exists
+  ansible.builtin.file:
+    path: "/home/{{ factorio_username }}/factorio-server/data/config"
+    state: directory
+    owner: "{{ factorio_container_user }}"
+    group: "{{ factorio_container_user }}"
+    recurse: true
+
+- name: Make sure the server config is up to date
+  remote_user: root
+  ansible.builtin.template:
+    src: "server-settings.json.j2"
+    dest: "/home/{{ factorio_username }}/factorio-server/data/config/server-settings.json"
+    owner: "{{ factorio_container_user }}"
+    group: "{{ factorio_container_user }}"
+
+- name: Make sure the rcon password file is up to date
+  remote_user: root
+  ansible.builtin.template:
+    src: "rconpw.j2"
+    dest: "/home/{{ factorio_username }}/factorio-server/data/config/rconpw"
+    owner: "{{ factorio_container_user }}"
+    group: "{{ factorio_container_user }}"
+
+- name: Make sure the factorio server services are up and running
+  remote_user: root
+  community.docker.docker_compose_v2:
+    project_src: "/home/{{ factorio_username }}/factorio-server"
+    build: always
+  register: output
+
+- name: Show results
+  ansible.builtin.debug:
+    var: output

@@ -1,0 +1,13 @@
+- name: Setup a factorio server running on docker
+  hosts: all
+  roles:
+    - docker
+    - role: default_user
+      default_user_username: "{{ global_default_user_name }}"
+      default_user_password: "{{ global_default_user_password | string }}"
+      default_user_pub_key: "{{ global_default_user_pub_key }}"
+    - role: factorio
+      factorio_username: "{{ global_default_user_name }}"
+      factorio_container_user: "845"
+  vars_files:
+    - roles/factorio/secrets.yaml
